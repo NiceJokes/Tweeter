@@ -18,7 +18,7 @@ Alalala
                 <div class="d-none alert alert-danger" id="tweet-create-form-error"></div>
                 <input type="hidden" value="/" name="next">
                 <textarea required="required" class="form-control" name="content" placeholder="Your Tweet"></textarea>
-                <button type="submit" class="btn btn-prima ry">Tweet</button>
+                <button type="submit" class="btn btn-primary">Tweet</button>
             </form>
         </div>
     </div>
@@ -34,12 +34,12 @@ tweetCreateFormEl.addEventListener('submit',handleTweetCreateFormDidSubmit)
 const tweetsContainerElement = document.getElementById("tweets")
 
 function handleTweetFormError(msg,display){
-    if(display===true){
-        var myErrorDiv = document.getElementById("tweet-create-form-error")
+    var myErrorDiv = document.getElementById("tweet-create-form-error")
+    if (display===true) {
         myErrorDiv.setAttribute("class","d-block alert alert-danger")
         myErrorDiv.innerText = msg
         //show error
-    }else{
+    } else{
         myErrorDiv.setAttribute("class","d-none alert alert-danger")
         //hide error
     }
@@ -67,23 +67,29 @@ function handleTweetCreateFormDidSubmit(event){
             tweetsContainerElement.innerHTML = newTweetElement + ogHtml
             myForm.reset()
         } else if (xhr.status === 400) {
-            const errorJson  = xhr.response
+            const errorJson = xhr.response
             console.log(errorJson)
             const contentError = errorJson.content
             let contentErrorMsg;
-            if(contentError){
+            if (contentError) {
                 contentErrorMsg = contentError[0]
-                if(contentErrorMsg){
-                    handleTweetFormError(contentErrorMsg,true)
-                }else{
+                if (contentErrorMsg) {
+                    handleTweetFormError(contentErrorMsg, true)
+                } else {
                     alert("Another error occurred,Please try again")
                 }
             } else {
                 alert("Another error occurred,Please try again")
             }
             console.log(contentErrorMsg)
+        } else if(xhr.status==401) {
+            alert("you must login")
+            window.location.href = "/login"
         } else if(xhr.status === 501) {
             alert("there was a server error, please try again")
+        } else if(xhr.status==403) {
+            alert("You must login")
+            window.location.href = "/login"
         }
     }
     xhr.onerror = function() {
@@ -102,8 +108,9 @@ function loadTweets(tweetsElement) {
     xhr.open(method,url)
     xhr.onload = function() {
         const serverResponse = xhr.response
-        const listedItems = serverResponse.response;
-        //console.log(listedItems)
+        const listedItems = serverResponse
+        //const listedItems = serverResponse.response; -- before serializer
+        //console.log(serverResponse)
         let finalTweetStr = ""
         let i;
         for(i=0; i<listedItems.length;i++) {
